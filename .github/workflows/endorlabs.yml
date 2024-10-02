@@ -1,51 +1,55 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Endor Labs
+name: Endor Labs Scan
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-  schedule:
-    - cron: '31 6 * * 3'
+  workflow_dispatch:
+    inputs:
+      api:
+        description: "Enter the target Endor Labs API"
+        required: true
+        type: choice
+        default: https://api.endorlabs.com
+        options:
+        - https://api.staging.endorlabs.com
+        - https://api.endorlabs.com
+      tenant_name:
+        description: "Enter your Endor Labs namespace?"
+        required: true
+        type: string
 jobs:
-  scan:
-    permissions:
-      security-events: write # Used to upload sarif artifact to GitHub
-      contents: read # Used to checkout a private repository by actions/checkout.
-      actions: read # Required for private repositories to upload sarif files. GitHub Advanced Security licenses are required.
-      id-token: write # Used for keyless authentication to Endor Labs
+  scan-repo:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    #### Package Build Instructions
-    ### Use this section to define the build steps used by your software package.
-    ### Endor Labs builds your software for you where possible but the required build tools must be made available.
-    # - name: Setup Java
-    #   uses: actions/setup-java@v4
-    #   with:
-    #     distribution: 'microsoft'
-    #     java-version: '17'
-    # - name: Build Package
-    #   run: mvn clean install
-    - name: Endor Labs scan pull request
-      if: github.event_name == 'pull_request'
-      uses: endorlabs/github-action@b51bd06466b545f01a6ac788e3e1147695d3936c
-      with:
-        namespace: "xiong_2024" # Modify the namespace to your Endor Labs tenant namespace.
-        sarif_file: findings.sarif
-    - name: Endor Labs scan monitor
-      if: github.event_name == 'push'
-      uses: endorlabs/github-action@b51bd06466b545f01a6ac788e3e1147695d3936c
-      with:
-        namespace: "xiong_2024" # Modify the namespace to your Endor Labs tenant namespace.
-        ci_run: "false"
-        sarif_file: findings.sarif
-    - name: Upload SARIF to github
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: findings.sarif
+        - name: Setup namespace Environment Variables
+          run: | 
+            NAMESPACE=$(jq -r '.inputs.tenant_name' $GITHUB_EVENT_PATH)
+            echo "::add-mask::$NAMESPACE" 
+            echo NAMESPACE=$NAMESPACE >> $GITHUB_ENV
+        
+        - name: Checkout Repository
+          uses: actions/checkout@v3
+          
+        - name: Set up Python 3.11
+          uses: actions/setup-python@v5
+          with:
+            python-version: '3.11'
+            cache: 'pip'
+    
+        - name: Install dependencies
+          run: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+            
+        - name: Endor Labs Workflow Dispatch
+          if: ${{ github.event_name == 'workflow_dispatch' }}
+          uses: endorlabs/github-action@736c93ea52b002f2ac229aaeb273b102cbf6fe12
+          with:
+            namespace: ${{ github.event.inputs.tenant_name }}
+            scan_summary_output_type: "table"
+            pr: "false"
+            enable_github_action_token: "true"
+            scan_dependencies: "true"
+            scan_secrets: "true"
+            scan_git_logs: "true"
+            additional_args: "--as-default-branch --api=${{ github.event.inputs.api }}"
