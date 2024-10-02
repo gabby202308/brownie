@@ -1,0 +1,72 @@
+            - name: Endor Labs Scan
+  # You may pin to the exact commit or the version.
+  # uses: endorlabs/github-action@a8ac7b44747fcbe98d0e80ab2d4e91f7ab9028fa
+  uses: endorlabs/github-action@v1.1.3
+  with:
+    # "Use this to add custom arguments to the endorctl command."
+    additional_args: # optional
+    # "Set to the Endor Labs API to use."
+    api: # optional, default is https://api.endorlabs.com
+    # "Set the API key used to authenticate with Endor Labs".
+    api_key: # optional
+    # "Set the secret corresponding to the API key used to authenticate with Endor Labs."
+    api_secret: # optional
+    # 
+    ci_run: # optional, default is true
+    # 
+    ci_run_tags: # optional
+    # "Set to `false` if you prefer to use another form of authentication over GitHub action OIDC tokens."
+    enable_github_action_token: # optional, default is true
+    # "Set to `true` to publish new findings as review comments. Must be used together with `pr` and `github_token`.  Additionally, the `issues: write` and `pull-requests: write` permissions must be set in the workflow."
+    enable_pr_comments: # optional
+    # "Set to the checksum associated with a pinned version of endorctl."
+    endorctl_checksum: # optional
+    # "Set to a version of endorctl to pin this specific version for use. Defaults to the latest version."
+    endorctl_version: # optional
+    # "Set to `false` to disable the json scan result artifact export."
+    export_scan_result_artifact: # optional, default is true
+    # "Set the target service account for GCP based authentication. GCP authentication is only enabled if this flag is set.  Cannot be used with `api_key`."
+    gcp_service_account: # optional
+    # "Set the token used to authenticate with GitHub. Required if `enable_pr_comments` is set to `true`."
+    github_token: # optional
+    # "Set the endorctl log level, see also `log_verbose`."
+    log_level: # optional, default is info
+    # "Set to `true` to enable verbose logging."
+    log_verbose: # optional
+    # "Set to the namespace of the project that you are working with."
+    namespace: 
+    # "Set to the name of a file to save results to. File name will be in the `results` output item. Default just writes to STDOUT."
+    output_file: # optional
+    # "Set to `false` to track this scan in Endor Labs as a release, as opposed to a point in time policy and finding test for a PR."
+    pr: # optional, default is true
+    # 'Set the baseline branch to enable action policies to only act on new findings.  Must be used together with `pr` Example: `pr_baseline: "main"`.'
+    pr_baseline: # optional
+    # "Set to `true` to report of CPU/RAM/time scan statistics via `time -v`; Linux runners only."
+    run_stats: # optional
+    # "Set to a location on your GitHub runner to output the findings in SARIF format."
+    sarif_file: # optional
+    # "Scan git commits and generate findings for all dependencies."
+    scan_dependencies: # optional, default is true
+    # "Scan source code repository for CI/CD tools."
+    scan_tools: # optional
+    # "Perform a more complete and detailed scan of secrets in the repository history.  Must be used together with `scan_secrets`."
+    scan_git_logs: # optional
+    # "Set to the path to scan. Defaults to the current working directory."
+    scan_path: # optional, default is .
+    # "Scan source code repository and generate findings for secrets. See also `scan_git_logs`."
+    scan_secrets: # optional
+    # "Set the desired output format to one of: `table`, `json`, `yaml`, or `summary`."
+    scan_summary_output_type: # optional, default is json
+    # "Specify a list of user-defined tags to add to this scan. Tags can be used to search and filter scans later."
+    tags: # optional
+    # "Enable the usage of Bazel for the scan."
+    use_bazel: # optional
+    # "Specify a a list of Bazel targets to exclude from scan."
+    bazel_exclude_targets: # optional
+    # "Specify a list of Bazel targets to scan. If `bazel_targets_include` is not set the `bazel_targets_query` value is used to determine with bazel targets to scan."
+    bazel_include_targets: # optional
+    # "Specify a Bazel query to determine with Bazel targets to scan. Ignored if `bazel_targets_include` is set."
+    bazel_targets_query: # optional
+    # "Enable phantom dependency analysis to identify dependencies used, but not declared in the manifest file."
+    phantom_dependencies: # optional
+          
