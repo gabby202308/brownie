@@ -20,6 +20,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      actions: read
+      security-events: write
     steps:
         - name: Setup namespace Environment Variables
           run: | 
